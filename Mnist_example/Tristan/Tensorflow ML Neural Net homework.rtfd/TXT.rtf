@@ -1,0 +1,311 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2512
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww14900\viewh8300\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Linear Regression Example- Snake Game
+\f0\b0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic.tiff \width8880 \height3960 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Inputs for determining if something is to the left, right, or front (where 1 is true, 0 false), and a recommended direction to move (-1 0 or 1)\
+Output is result- did it work (1) or fail (0)\
+Each connection to output given a default weight (w) and weight bias (b)\
+\
+Sigma notation for this is:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\fs36 \cf0 i\
+\uc0\u8721  (Vi * Wi) + b1\
+i=1
+\fs24 \
+\
+Thus the weighted sum is output value of \
+V1W1+V2W2+V3W3+V4W4+b1+b2+b3+b4\
+\
+To train the network, run 100 times; it gets data/stats on what statistically works and doesn't and auto multiplies to the biases and weights appropriately to what it learned \
+\
+Activation Functions - simplify data and allow for more complexity\
+The above example is fairly limited in the complexity that we usually need.\
+Nonlinear functions aren't complex enough - we can specify a range for output 1-10\
+This was something closer to 10 might be more "correct" than say a 3 or something\
+https://en.wikipedia.org/wiki/Sigmoid_function\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 2.tiff \width6320 \height4160 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+f(x) where    f (\uc0\u8721  (Vi * Wi) + b1)\
+\
+More common than using sigmoid Rectifying Linear unit used more often\
+takes values that are negative (on the x axis above) and sets them to 0 (simplifies the range of values)\
+\
+Loss function used to determine adjustment to weight and values\
+How "wrong" is the result? e.g specify 7 is 3 off in 1-10 range mentioned above\
+Compares the output result to what the desired result should be\
+\
+Most models of neural networks will have several layers to them unlike the snake example:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 3.tiff \width3140 \height2800 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Loading and Looking at Data
+\f0\b0 \
+\
+Diagram of input, hidden and output layers in fashionDB tutorial\
+Data is flattened 28*28  = 784\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 4.tiff \width4440 \height4400 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+The code:\
+---------------------------------------------------------------\
+import tensorflow as tf\
+from tensorflow import keras\
+import numpy as np\
+import matplotlib.pyplot as plt\
+\
+data = keras.datasets.fashion_mnist\
+\
+# make datasets for initial testing and separate for actual to use\
+(train_images, train_labels), (test_images, test_labels) = data.load_data()\
+# keras makes it simpler with this instead of writing a bunch of extra code\
+\
+class_names = ['T-shirt/top', 'Trouser', 'Pullover', 'Dress', 'Coat',\
+               'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankle boot']\
+\
+# this optimizes the pixel numbers a bit\
+train_images = train_images/255.0\
+test_images = test_images/255.0\
+\
+# flatten to enable passing data to a bunch of individual neurons rather\
+# than sending a whole list to a single neuron (since it is a multidimensional\
+# array).  activation is rectifiy linear unit, and softmax says determine\
+# probability of a match. Sequential just means the sequence of the\
+# layers is intended as listed\
+model = keras.sequential([\
+    keras.layers.Flatten(input_shape=(28,28)),\
+    keras.layers.dense(128, activation="relu"),\
+    keras.layers.dense(10, activation="softmax"),\
+])\
+\
+model.compile(optimizer= "adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])\
+\
+# this tells it to train the model\
+# epochs is how many times the model\
+# is going see the same piece of data chosen randomly\
+model.fit(train_images, train_labels, epochs=5)\
+\
+#run  the test first\
+test_loss, test_acc = model.evaluate(test_images, test_labels)\
+print("Tested accuracy:" test_acc)\
+\
+--------------------------------------------------------------------------------------\
+\
+Output:  test_acc gives 87%\
+\
+Thoth-12:tensorflow_work tm$ python "clothing_tut.py" \
+2020-06-03 13:38:15.241384: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x7fbe055cb590 initialized for platform Host (this does not guarantee that XLA will be used). Devices:\
+2020-06-03 13:38:15.241418: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Host, Default Version\
+Epoch 1/5\
+1875/1875 [==============================] - 4s 2ms/step - loss: 0.4946 - accuracy: 0.8275\
+Epoch 2/5\
+1875/1875 [==============================] - 4s 2ms/step - loss: 0.3732 - accuracy: 0.8654\
+Epoch 3/5\
+1875/1875 [==============================] - 4s 2ms/step - loss: 0.3357 - accuracy: 0.8777\
+Epoch 4/5\
+1875/1875 [==============================] - 4s 2ms/step - loss: 0.3151 - accuracy: 0.8858\
+Epoch 5/5\
+1875/1875 [==============================] - 4s 2ms/step - loss: 0.2944 - accuracy: 0.8907\
+313/313 [==============================] - 0s 1ms/step - loss: 0.3611 - accuracy: 0.8626\
+Tested accuracy: 0.8626000285148621\
+\
+-------------------------------------------------------------\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Predictions
+\f0\b0 \
+At the end of the code, we take off the testing stuff below model.fit and put this in\
+\
+prediction = model.predict(test_images)\
+print(prediction)\
+\
+We get this output after the epoch output shown above:\
+\
+[[2.63205293e-05 1.77843500e-08 6.81246377e-07 ... 5.98993413e-02\
+  1.85974222e-05 9.38803077e-01]\
+ [4.52250606e-05 1.94863209e-10 9.95586038e-01 ... 2.70578809e-15\
+  8.11329848e-09 3.85116337e-14]\
+ [3.70930388e-06 9.99995232e-01 1.29162316e-07 ... 7.82647908e-16\
+  4.83713104e-11 2.37031401e-12]\
+ ...\
+ [1.08206645e-04 5.12980725e-09 2.33691360e-04 ... 1.49616233e-06\
+  9.99283135e-01 3.24016751e-11]\
+ [1.93081678e-06 9.99712527e-01 4.49199177e-07 ... 1.34286977e-13\
+  7.46847206e-09 1.52336099e-09]\
+ [2.13134088e-04 3.07265253e-07 1.01346443e-04 ... 2.01853923e-02\
+  2.36195279e-03 4.01938480e-04]]\
+\
+We have 10 neurons so we are getting 10 values.  \
+Represents how much the model thinks each picture is of a certain class\
+To make it more granular use  print(prediction[0])\
+\
+[2.6317590e-05 1.1457739e-06 5.3882868e-06 3.4834811e-06 4.1146886e-05\
+ 8.2677510e-03 6.0298637e-05 3.2652864e-01 8.0778962e-05 6.6498506e-01]\
+\
+print(np.argmax(prediction[0])) ----- will give you the index number of the item with biggest number\
+\
+print(class_names[np.argmax(prediction[0])])  ---- will give you the name of that item (like "Ankle boot")\
+\
+How do we validate this is accurate? Show the input and show the predicted value.\
+\
+for i in range(5)\
+    plt.grid(False)\
+    plt.imshow(test_images[i], cmap=plt.cm.binary)\
+    plt.xlabel("Actual: " + class_names[test_labels[i]])\
+    plt.title("Prediction: " + class_names[np.argmax(prediction[i])])\
+    plt.show()\
+\
+Produces this for the results:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 6.tiff \width6600 \height5560 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+For just one item you would use:\
+prediction = model.predict(test_images[7])\
+\
+\
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Text Classification
+\f0\b0 \
+\
+The code:\
+\
+--------------------------------\
+import tensorflow as tf\
+from tensorflow import keras\
+import numpy as np\
+\
+data = keras.datasets.imdb\
+\
+# make datasets for initial testing and separate forr actual to use\
+(train_data, train_labels), (test_data, test_labels) = data.load_data(num_words=10000)\
+\
+# This will print out numerical representations of the words\
+print(train_data[0])\
+\
+# Return tuples with string containing word\
+word_index = data.get_word_index()\
+# Break tuple into k and v - key is the word start value numbering at 3\
+word_index = \{k:(v+3) for k,v in word_index.items()\}\
+# These are the 3 reserved values we are using for our purposes:\
+word_index["<PAD>"] = 0\
+word_index["<START>"] = 1\
+word_index["<UNK>"] = 2\
+word_index["<UNUSED>"] = 3\
+\
+# Swap the keys and values with eachother\
+reverse_word_index = dict([(value, key) for (key, value) in word_index.items()])\
+\
+# Try to get i and if it isn't there put a ? in\
+# this will get all the keys\
+def decode_review(text):\
+    return " ".join([reverse_word_index.get(i, "?") for i in text])\
+\
+print (decode_review(test_data[0]))\
+\
+---------------------------------------------------------------------------------------\
+The print statements return this:\
+\
+[1, 14, 22, 16, 43, 530, 973, 1622, 1385, 65, 458, 4468, 66, 3941, 4, 173, 36, 256, 5, 25, 100, 43, 838, 112, 50, 670, 2, 9, 35, 480, 284, 5, 150, 4, 172, 112, 167, 2, 336, 385, 39, 4, 172, 4536, 1111, 17, 546, 38, 13, 447, 4, 192, 50, 16, 6, 147, 2025, 19, 14, 22, 4, 1920, 4613, 469, 4, 22, 71, 87, 12, 16, 43, 530, 38, 76, 15, 13, 1247, 4, 22, 17, 515, 17, 12, 16, 626, 18, 2, 5, 62, 386, 12, 8, 316, 8, 106, 5, 4, 2223, 5244, 16, 480, 66, 3785, 33, 4, 130, 12, 16, 38, 619, 5, 25, 124, 51, 36, 135, 48, 25, 1415, 33, 6, 22, 12, 215, 28, 77, 52, 5, 14, 407, 16, 82, 2, 8, 4, 107, 117, 5952, 15, 256, 4, 2, 7, 3766, 5, 723, 36, 71, 43, 530, 476, 26, 400, 317, 46, 7, 4, 2, 1029, 13, 104, 88, 4, 381, 15, 297, 98, 32, 2071, 56, 26, 141, 6, 194, 7486, 18, 4, 226, 22, 21, 134, 476, 26, 480, 5, 144, 30, 5535, 18, 51, 36, 28, 224, 92, 25, 104, 4, 226, 65, 16, 38, 1334, 88, 12, 16, 283, 5, 16, 4472, 113, 103, 32, 15, 16, 5345, 19, 178, 32]\
+<START> please give this one a miss br br <UNK> <UNK> and the rest of the cast rendered terrible performances the show is flat flat flat br br i don't know how michael madison could have allowed this one on his plate he almost seemed to know this wasn't going to work out and his performance was quite <UNK> so all you madison fans give this a miss\
+\
+The numbers from print(train_data[0]) are representations of the words at the bottom from print (decode_review(test_data[0]))\
+\
+The model: explanation\
+\
+# 1:30:00 in vid - Embedding tries to group similar works (screenshot)\
+# Word vector (linear) 16 dimentional - 10000 word vectors\
+# 16 coefficients for each vector i.e ax+by=c being 2 and the ax+by+cz+...\
+\
+# GlobaAvgPooling1D flattens the data a bit - averages out the previous layer\
+# then moves to dense layer, and then dumps to sigmoid for 0 or 1 output\
+\
+model = keras.Sequential()\
+model.add(keras.layers.Embedding(10000, 16))\
+model.add(keras.layers.GlobalAveragePooling1D())\
+model.add(keras.layers.Dense(16, activation="relu"))\
+model.add(keras.layers.Dense(1, activation="sigmoid"))\
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic 1__#$!@%!#__Pasted Graphic.tiff \width10060 \height6220 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 1.tiff \width6140 \height3420 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 4.tiff \width3460 \height2160 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 2.tiff \width5600 \height3440 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 3.tiff \width5160 \height2660 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\
+\
+\
+\
+\
+\
+\
+\pard\pardeftab720\partightenfactor0
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+}

@@ -1,0 +1,964 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2512
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;\f2\fnil\fcharset77 ZapfDingbatsITC;
+\f3\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue233;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c93333;}
+\margl1440\margr1440\vieww15420\viewh8480\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Definitions:
+\f0\b0 \
+Label: the variable we are predicting (y) - spam or notspam\
+Features: input variables describing the data (x1, x2, ...xn) - words, to/from addresses\
+	- the x variable in simple linear regression\
+Example would be a single email\
+	- a particular instance of data, x\
+Labeled example has both labels and feature (for training)\
+Unlabeled example is for predictions of new data - has features but no label\
+\
+Training means creating or learning the model.\
+	- show the model labeled examples and enable the model to gradually learn the relationships between features and label.\
+\
+Inference means applying the trained model to unlabeled examples. \
+	- use the trained model to make useful predictions (y'); to predict x for new unlabeled examples.\
+\
+Regression vs. classification\
+A regression model predicts continuous values.\
+	- What is the value of a house in California?\
+	- What is the probability that a user will click on this ad?\
+\
+A classification model predicts discrete values\
+	- Is a given email message spam or not spam?\
+	- Is this an image of a dog, a cat, or a hamster?\
+\
+
+\f1\b Common supervised and unsupervised ML problems.
+\f0\b0 \
+\
+Classification\
+	Pick one of N labels\
+	Cat, dog, horse, or bear\
+Regression\
+	Predict numerical values\
+	Click-through rate\
+Clustering\
+	Group similar examples\
+	Most relevant documents (unsupervised)\
+Association rule learning\
+	Infer likely association patterns in data\
+	If you buy hamburger buns, you're likely to buy hamburgers (unsupervised)\
+Structured output\
+	Create complex output\
+	Natural language parse trees, image recognition bounding boxes\
+Ranking\
+	Identify position on a scale or status\
+	Search result ranking\
+\
+\
+---------------------------------------------------------------\
+\
+\pard\pardeftab720\partightenfactor0
+\cf0 In general, raising the classification threshold reduces false positives, thus raising precision.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+---------------------------------------------------------------\
+\
+Supervised ML; feed the features, corresponding labels into an algorithm (training) \
+	- During training, the algorithm gradually determines the relationship between them\
+Unsupervised learning, the goal is to identify meaningful patterns- unlabeled data set\
+Reinforcement learning (RL) type of machine learning;  you don't collect examples with labels\
+\
+---------------------------------------------------------------\
+\
+Ask yourself the following questions:\
+- What problem is my product facing?\
+- Would it be a good problem for ML?\
+	Don't ask the questions the other way around!\
+\
+How will you measure your metrics?\
+When can you measure your metrics?\
+How long will it take to know whether your new ML system is a success or failure?\
+\
+---------------------------------------------------------------\
+\
+ML is better at making decisions than giving you insights. If you have a bunch of data and want to find out "interesting" things about it, statistical approaches make more sense.\
+\
+---------------------------------------------------------------\
+\
+You cannot tell whether a user enjoyed a video without asking the user. If you can't ask the user, you'll need to use a proxy label instead. That is, you'll need to use a substitute label that will stand in for the real thing. The degree to which users shared the video is a pretty good proxy label. True, sharing isn't a perfect approximation of enjoyment because users might share a video for reasons other than enjoyment (for example, to make fun of a video). However, sharing is quantifiable, trackable, and provides a decent predictive signal.\
+\
+Goodhart's law , "When a measure becomes a target, it ceases to be a good measure."\
+\
+---------------------------------------------------------------\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Heuristics
+\f0\b0 \
+How might you solve your problem without ML?\
+\
+Suppose you need to deliver a product tomorrow, and you have only time enough to hard-code the business logic. You could try a heuristic (non-ML solution) like the following:\
+\
+Example\
+Consider people who uploaded popular videos in the past. Assume that new videos uploaded by these people will also become popular.\
+The preceding heuristic might not be the world\'92s greatest heuristic, but it does provide a baseline. Never launch a fancy ML model that can't beat a heuristic. The exercise of making a heuristic often will help you identify good signals in your ML model.\
+\
+Non-ML solutions can sometimes be simpler to maintain than ML solutions\
+\
+---------------------------------------------------------------\
+\
+Y is what we are predicting, X is our data\
+Loss is the deviation from the linear line (0 loss or +loss)\
+Bias is the start above 0 the linear regression model starts\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic.tiff \width6880 \height4760 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Example loss calc:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 1.tiff \width6300 \height3620 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 2.tiff \width6560 \height1540 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Empirical risk minimization: in supervised learning, a machine learning algorithm builds a model by examining many examples and attempting to find a model that minimizes loss\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 3.tiff \width4680 \height860 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Mean square error (MSE) is the average squared loss per example over the whole dataset. To calculate MSE, sum up all the squared losses for individual examples and then divide by the number of examples:\
+(x, y) is an example in which\
+x is the set of features (for example, chirps/minute, age, gender) that the model uses to make predictions.\
+y is the example's label (for example, temperature).\
+prediction(x)  is a function of the weights and bias in combination with the set of features x.\
+D is a data set containing many labeled examples, which are  pairs.\
+N is the number of examples in .\
+Although MSE is commonly-used in machine learning, it is neither the only practical loss function nor the best loss function for all circumstances.\
+\
+---------------------------------------------------------------\
+\
+Iterative approach to training a model (the order our code is actually executed)\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 4.tiff \width9920 \height4080 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+Thus label is compared after prediction is done.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 5.tiff \width7260 \height5620 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Convex problems have only one minimum; that is, only one place where the slope is exactly 0. That minimum is where the loss function converges.\
+\
+Calculating the loss function for every conceivable value of  w1 over the entire data set would be an inefficient way of finding the convergence point. Let's examine a better mechanism\'97very popular in machine learning\'97called gradient descent.\
+\
+The first stage in gradient descent is to pick a starting value (a starting point) for w1 . The starting point doesn't matter much; therefore, many algorithms simply set w1 to 0 or pick a random value. The following figure shows that we've picked a starting point slightly greater than 0:\
+\
+The gradient descent algorithm then calculates the gradient of the loss curve at the starting point. The gradient of the loss is equal to the derivative (slope) of the curve, and tells you which way is "warmer" or "colder." When there are multiple weights, the gradient is a vector of partial derivatives with respect to the weights.\
+\
+\
+---------------------------------------------------------------\
+\
+In gradient descent, a batch is the total number of examples you use to calculate the gradient in a single iteration. So far, we've assumed that the batch has been the entire data set. When working at Google scale, data sets often contain billions or even hundreds of billions of examples. Furthermore, Google data sets often contain huge numbers of features. Consequently, a batch can be enormous. A very large batch may cause even a single iteration to take a very long time to compute.\
+\
+A large data set with randomly sampled examples probably contains redundant data. In fact, redundancy becomes more likely as the batch size grows. Some redundancy can be useful to smooth out noisy gradients, but enormous batches tend not to carry much more predictive value than large batches.\
+\
+What if we could get the right gradient on average for much less computation? By choosing examples at random from our data set, we could estimate (albeit, noisily) a big average from a much smaller one. Stochastic gradient descent (SGD) takes this idea to the extreme--it uses only a single example (a batch size of 1) per iteration. Given enough iterations, SGD works but is very noisy. The term "stochastic" indicates that the one example comprising each batch is chosen at random.\
+\
+Mini-batch stochastic gradient descent (mini-batch SGD) is a compromise between full-batch iteration and SGD. A mini-batch is typically between 10 and 1,000 examples, chosen at random. Mini-batch SGD reduces the amount of noise in SGD but is still more efficient than full-batch.\
+\
+\
+---------------------------------------------------------------\
+\
+An overfit model gets a low loss during training but does a poor job predicting new data. If a model fits the current sample well, how can we trust that it will make good predictions on new data? As you'll see later on, overfitting is caused by making a model more complex than necessary. The fundamental tension of machine learning is between fitting our data well, but also fitting the data as simply as possible.\
+\
+Ockham's razor in machine learning terms:\
+The less complex an ML model, the more likely that a good empirical result is not just due to the peculiarities of the sample.\
+\
+In modern times, we've formalized Ockham's razor into the fields of statistical learning theory and computational learning theory. These fields have developed generalization bounds--a statistical description of a model's ability to generalize to new data based on factors such as:\
+\
+	- the complexity of the model\
+	- the model's performance on training data\
+\
+While the theoretical analysis provides formal guarantees under idealized assumptions, they can be difficult to apply in practice. Machine Learning Crash Course focuses instead on empirical evaluation to judge a model's ability to generalize to new data.\
+\
+\
+---------------------------------------------------------------\
+\
+Good performance on the test set is a useful indicator of good performance on the new data in general, assuming that:\
+\
+The test set is large enough.\
+You don't cheat by using the same test set over and over.\
+\
+\
+---------------------------------------------------------------\
+\
+Three basic assumptions guide generalization:\
+\
+	- We draw examples independently and identically (i.i.d) at random from the distribution. In other words, examples don't influence each other. (An alternate explanation: i.i.d. is a way of referring to the randomness of variables.)\
+	- The distribution is stationary; that is the distribution doesn't change within the data set.\
+	- We draw examples from partitions from the same distribution.\
+\
+In practice, we sometimes violate these assumptions. For example:\
+	- Consider a model that chooses ads to display. The i.i.d. assumption would be violated if the model bases its choice of ads, in part, on what ads the user has previously seen.\
+	- Consider a data set that contains retail sales information for a year. User's purchases change seasonally, which would violate stationarity.\
+\
+\
+---------------------------------------------------------------\
+\
+Splitting Data\
+\
+training set\'97a subset to train a model.\
+test set\'97a subset to test the trained model.\
+\
+Make sure that your test set meets the following two conditions:\
+	- Is large enough to yield statistically meaningful results.\
+	- Is representative of the data set as a whole. In other words, don't pick a test set with different characteristics than the training set.\
+\
+Never train on test data. If you are seeing surprisingly good results on your evaluation metrics, it might be a sign that you are accidentally training on the test set. For example, high accuracy might indicate that test data has leaked into the training set.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic 1__#$!@%!#__Pasted Graphic.tiff \width7280 \height3720 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+You can greatly reduce your chances of overfitting by partitioning the data set into the three subsets, training (largest), validation (smaller), and test set (similarly smaller)\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 1.tiff \width7260 \height3480 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Pick the model that does best on the validation set.\
+Double-check that model against the test set.\
+This is a better workflow because it creates fewer exposures to the test set.\
+\
+---------------------------------------------------------------\
+\
+In traditional programming, the focus is on code. \
+In machine learning projects, the focus shifts to representation;  hone a model is by adding and improving its features.\
+\
+Mapping Raw Data to Features - raw data from an input data source\
+Feature engineering means transforming raw data into a feature vector- the set of floating-point values comprising the examples in your data set.\
+Many machine learning models must represent the features as real-numbered vectors since the feature values must be multiplied by the model weights.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 2.tiff \width7740 \height3300 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Integer and floating-point data don't need a special encoding because they can be multiplied by a numeric weight.\
+\
+Categorical features have a discrete set of possible values. For example, there might be a feature called street_name with options that include:\
+\
+\{'Charleston Road', 'North Shoreline Boulevard', 'Shorebird Way', 'Rengstorff Avenue'\}\
+\
+Since models cannot multiply strings by the learned weights, we use feature engineering to convert strings to numeric values.\
+\
+Define a mapping from the feature values, which we'll refer to as the vocabulary of possible values, to integers. \
+We can group all other streets into a catch-all "other" category, known as an OOV (out-of-vocabulary) bucket.\
+\
+map Charleston Road to 0\
+map North Shoreline Boulevard to 1\
+map Shorebird Way to 2\
+map Rengstorff Avenue to 3\
+map everything else (OOV) to 4\
+\
+If we incorporate these index numbers directly into our model, it will impose some constraints that might be problematic:\
+	- Learning a single weight that applies to all streets. \
+		i.e, a weight of 6 for street_name, then we will multiply it by 0 for Charleston Road, by 1 for North Shoreline Boulevard, 2 for Shorebird Way and so on. \
+\
+Consider a model that predicts house prices using street_name as a feature. It is unlikely that there is a linear adjustment of price based on the street name, and furthermore this would assume you have ordered the streets based on their average house price. Our model needs the flexibility of learning different weights for each street that will be added to the price estimated using the other features.\
+\
+We aren't accounting for cases where street_name may take multiple values. For example, many houses are located at the corner of two streets, and there's no way to encode that information in the street_name value if it contains a single index.\
+\
+To remove both these constraints, we can instead create a binary vector for each categorical feature in our model that represents values as follows:\
+	- For values that apply to the example, set corresponding vector elements to 1.\
+	- Set all other elements to 0.\
+The length of this vector is equal to the number of elements in the vocabulary. This 
+\f1\b representation is called a one-hot encoding when a single value is 1, and a multi-hot encoding when multiple values are 1.\
+
+\f0\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 3.tiff \width8860 \height3660 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+This approach effectively creates a Boolean variable for every feature value (e.g., street name). Here, if a house is on Shorebird Way then the binary value is 1 only for Shorebird Way. Thus, the model uses only the weight for Shorebird Way.\
+\
+Similarly, if a house is at the corner of two streets, then two binary values are set to 1, and the model uses both their respective weights.\
+\
+One-hot encoding extends to numeric data that you do not want to directly multiply by a weight, such as a postal code.\
+\
+\
+---------------------------------------------------------------\
+\
+Sparse Representation\
+Suppose that you had 1,000,000 different street names in your data set that you wanted to include as values for street_name. Explicitly creating a binary vector of 1,000,000 elements where only 1 or 2 elements are true is a very inefficient representation in terms of both storage and computation time when processing these vectors. In this situation, a common approach is to use a sparse representation in which only nonzero values are stored. In sparse representations, an independent model weight is still learned for each feature value, as described above.\
+\
+\
+---------------------------------------------------------------\
+\
+Representation: Qualities of Good Features\
+\
+	Avoid rarely used discrete feature values\
+Good feature values should appear more than 5 or so times in a data set. \
+A house_type feature would likely contain many examples in which its value was victorian:\
+\
+house_type: victorian\
+\
+Conversely, if a feature's value appears only once or very rarely, the model can't make predictions based on that feature. For example, unique_house_id is a bad feature because each value would be used only once, so the model couldn't learn anything from it:\
+\
+unique_house_id: 8SK982ZZ1242Z\
+\
+	Prefer clear and obvious meanings\
+For example, the following good feature is clearly named and the value makes sense \
+\
+house_age_years: 27 \
+\
+The following feature value is pretty much indecipherable to anyone but the engineer who created it:\
+\
+house_age: 851472000\
+\
+In some cases, noisy data (rather than bad engineering choices) causes unclear values. \
+The following user_age_years came from a source that didn't check for appropriate values:\
+\
+user_age_years: 277\
+\
+	Don't mix "magic" values with actual data\
+Good floating-point features don't contain peculiar out-of-range discontinuities or "magic" values. For example, suppose a feature holds a floating-point value between 0 and 1. So, values like the following are fine:\
+\
+quality_rating: 0.82\
+quality_rating: 0.37\
+\
+However, if a user didn't enter a quality_rating, perhaps the data set represented its absence with a magic value like the following:\
+\
+quality_rating: -1\
+\
+To explicitly mark magic values, create a Boolean feature that indicates whether or not a quality_rating was supplied. Give this Boolean feature a name like is_quality_rating_defined.\
+\
+In the original feature, replace the magic values as follows:\
+\
+For variables that take a finite set of values (discrete variables), add a new value to the set and use it to signify that the feature value is missing.\
+For continuous variables, ensure missing values do not affect the model by using the mean value of the feature's data.\
+\
+	Account for upstream instability\
+The definition of a feature shouldn't change over time. For example, the following value is useful because the city name probably won't change. (Note that we'll still need to convert a string like "br/sao_paulo" to a one-hot vector.)\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f2 \cf0 \uc0\u10004 
+\f0 city_id: "br/sao_paulo"\
+\
+But gathering a value inferred by another model carries additional costs. Perhaps the value "219" currently represents Sao Paulo, but that representation could easily change on a future run of the other model:\
+\
+
+\f2 \uc0\u10008 
+\f0 inferred_city_cluster: "219"\
+\
+\
+---------------------------------------------------------------\
+\
+Representation: Cleaning Data\
+\
+	Scaling feature values\
+Converting floating-point feature values from their natural range \
+(for example, 100 to 900) into a standard range (for example, 0 to 1 or -1 to +1).\
+Provides the following benefits:\
+	- Helps gradient descent converge more quickly.\
+	- Helps avoid the "NaN trap," in which one number in the model becomes a NaN (e.g., when a value exceeds the floating-point precision limit during training), and\'97due to math operations\'97every other number in the model also eventually becomes a NaN.\
+	- Helps the model learn appropriate weights for each feature. Or else, the model will pay too much attention to the features having a wider range.\
+\
+You don't have to give every floating-point feature exactly the same scale. Nothing terrible will happen if Feature A is scaled from -1 to +1 while Feature B is scaled from -3 to +3. However, your model will react poorly if Feature B is scaled from 5000 to 100000.\
+\
+One obvious way is to linearly map [min value, max value] to a small scale, such as [-1, +1].\
+Another popular scaling tactic is to calculate the Z score of each value. The Z score relates the number of standard deviations away from the mean. In other words:\
+\
+scaledValue = (value - mean) / stddev\
+\
+For example, given:\
+\
+mean = 100\
+standard deviation = 20\
+original value = 130\
+then:\
+\
+  scaled_value = (130 - 100) / 20\
+  scaled_value = 1.5\
+\
+Scaling with Z scores means that most scaled values will be between -3 and +3, but a few values will be a little higher or lower than that range.\
+\
+\
+\
+	Handling extreme outliers\
+The following plot represents a feature called roomsPerPerson from the California Housing data set. The value of roomsPerPerson was calculated by dividing the total number of rooms for an area by the population for that area. The plot shows that the vast majority of areas in California have one or two rooms per person. But take a look along the x-axis.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 4.tiff \width8040 \height5400 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Take the log of every value?\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic 1__#$!@%!#__Pasted Graphic 5.tiff \width8580 \height4700 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+If we "cap" or "clip" the maximum value of roomsPerPerson at an arbitrary value, say 4.0?\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 7.tiff \width8340 \height4860 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Doesn't ignore all values greater than 4.0- says all values that were greater than 4.0 now become 4.0. This explains the hill at 4.0.\
+\
+\
+\
+	Binning\
+The following plot shows the relative prevalence of houses at different latitudes in California. Notice the clustering\'97Los Angeles is about at latitude 34 and San Francisco is roughly at latitude 38.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 8.tiff \width7480 \height5900 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+In the data set, latitude is a floating-point value. However, it doesn't make sense to represent latitude as a floating-point feature in our model. That's because no linear relationship exists between latitude and housing values. For example, houses in latitude 35 are not 35:34 more expensive (or less expensive) than houses at latitude 34. And yet, individual latitudes probably are a pretty good predictor of house values.\
+\
+To make latitude a helpful predictor, let's divide latitudes into "bins":\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 9.tiff \width14380 \height5940 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Instead of having one floating-point feature, we now have 11 distinct boolean features (LatitudeBin1, LatitudeBin2, ..., LatitudeBin11). Having 11 separate features is somewhat inelegant, so let's unite them into a single 11-element vector. Doing so will enable us to represent latitude 37.4 as follows:\
+\
+[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]\
+\
+Thanks to binning, our model can now learn completely different weights for each latitude.  Had we wanted finer-grain resolution, we could have split bin boundaries at, say, every tenth of a degree. Adding more bins enables the model to learn different behaviors from latitude 37.4 than latitude 37.5, but only if there are sufficient examples at each tenth of a latitude.\
+\
+Another approach is to bin by quantile, which ensures that the number of examples in each bucket is equal. Binning by quantile completely removes the need to worry about outliers.\
+\
+\
+	Scrubbing\
+Many examples in data sets are unreliable due to one or more of the following:\
+	Omitted values - a person forgot to enter a value for a house's age.\
+	Duplicate examples -a server mistakenly uploaded the same logs twice.\
+	Bad labels - a person mislabeled a picture of an oak tree as a maple.\
+	Bad feature values - someone typed in an extra digit, or a thermometer was left out in the sun.\
+\
+To detect omitted values or duplicated examples, you can write a simple program. Detecting bad feature values or labels can be far trickier.\
+\
+In addition to detecting bad individual examples, you must also detect bad data in the aggregate. Histograms are a great mechanism for visualizing your data in the aggregate. In addition, getting statistics like the following can help:\
+	Maximum and minimum\
+	Mean and median\
+	Standard deviation\
+Consider generating lists of the most common values for discrete features. For example, do the number of examples with country:uk match the number you expect. Should language:jp really be the most common language in your data set?\
+\
+	Know your data - Follow these rules:\
+- Keep in mind what you think your data should look like.\
+- Verify that the data meets these expectations (or that you can explain why it doesn\'92t).\
+- Double-check that the training data agrees with other sources (for example, dashboards).\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Feature Crosses- Encoding non-linearity
+\f0\b0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 10.tiff \width7380 \height3640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+On the left you can draw a straight line to separate the groups, the second you can't - you need two lines\
+\
+A feature cross is a synthetic feature that encodes nonlinearity in the feature space by multiplying two or more input features together. (The term cross comes from cross product.) Let's create a feature cross named x3 by crossing  x1 and x2\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 12.tiff \width10240 \height1600 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+A linear algorithm can learn a weight for w3 just as it would for  w1 and w2. In other words, although w3 encodes nonlinear information, you don\'92t need to change how the linear model trains to determine the value of w3.\
+\
+Kinds of feature crosses\
+We can create many different kinds of feature crosses. For example:\
+\
+[A X B]: a feature cross formed by multiplying the values of two features.\
+[A x B x C x D x E]: a feature cross formed by multiplying the values of five features.\
+[A x A]: a feature cross formed by squaring a single feature.\
+\
+Thanks to stochastic gradient descent, linear models can be trained efficiently. Consequently, supplementing scaled linear models with feature crosses has traditionally been an efficient way to train on massive-scale data sets.\
+\
+----------------------------------------\
+\
+Feature Crosses: Crossing One-Hot Vectors\
+Estimated Time: 8 minutes\
+So far, we've focused on feature-crossing two individual floating-point features. In practice, machine learning models seldom cross continuous features. However, machine learning models do frequently cross one-hot feature vectors. Think of feature crosses of one-hot feature vectors as logical conjunctions. For example, suppose we have two features: country and language. A one-hot encoding of each generates vectors with binary features that can be interpreted as country=USA, country=France or language=English, language=Spanish. Then, if you do a feature cross of these one-hot encodings, you get binary features that can be interpreted as logical conjunctions, such as:\
+\
+  country:usa AND language:spanish\
+\
+As another example, suppose you bin latitude and longitude, producing separate one-hot five-element feature vectors. For instance, a given latitude and longitude could be represented as follows:\
+\
+  binned_latitude = [0, 0, 0, 1, 0]\
+  binned_longitude = [0, 1, 0, 0, 0]\
+\
+Suppose you create a feature cross of these two feature vectors:\
+\
+  binned_latitude X binned_longitude\
+\
+This feature cross is a 25-element one-hot vector (24 zeroes and 1 one). The single 1 in the cross identifies a particular conjunction of latitude and longitude. Your model can then learn particular associations about that conjunction.\
+\
+Suppose we bin latitude and longitude much more coarsely, as follows:\
+\
+binned_latitude(lat) = [\
+  0  < lat <= 10\
+  10 < lat <= 20\
+  20 < lat <= 30\
+]\
+\
+binned_longitude(lon) = [\
+  0  < lon <= 15\
+  15 < lon <= 30\
+]\
+\
+Creating a feature cross of those coarse bins leads to synthetic feature having the following meanings:\
+\
+binned_latitude_X_longitude(lat, lon) = [\
+  0  < lat <= 10 AND 0  < lon <= 15\
+  0  < lat <= 10 AND 15 < lon <= 30\
+  10 < lat <= 20 AND 0  < lon <= 15\
+  10 < lat <= 20 AND 15 < lon <= 30\
+  20 < lat <= 30 AND 0  < lon <= 15\
+  20 < lat <= 30 AND 15 < lon <= 30\
+]\
+\
+Now suppose our model needs to predict how satisfied dog owners will be with dogs based on two features:\
+\
+Behavior type (barking, crying, snuggling, etc.)\
+Time of day\
+If we build a feature cross from both these features:\
+\
+  [behavior type X time of day]\
+\
+then we'll end up with vastly more predictive ability than either feature on its own. For example, if a dog cries (happily) at 5:00 pm when the owner returns from work will likely be a great positive predictor of owner satisfaction. Crying (miserably, perhaps) at 3:00 am when the owner was sleeping soundly will likely be a strong negative predictor of owner satisfaction.\
+\
+Linear learners scale well to massive data. Using feature crosses on massive data sets is one efficient strategy for learning highly complex models. Neural networks provide another strategy.\
+\
+\
+----------------------------------------\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Regularization for Simplicity: L2 Regularization
+\f0\b0 \
+\
+Generalization curve shows the loss for both the training set and validation set against the number of training iterations\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 13.tiff \width7200 \height3340 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Shows that the model is overfitting to the data in the training set. We could prevent overfitting by penalizing complex models, a principle called 
+\f1\b regularization
+\f0\b0 \
+\
+Instead of simply aiming to minimize loss (empirical risk minimization):\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 14.tiff \width5160 \height860 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+We'll now minimize loss+complexity, which is called 
+\f1\b structural risk minimization
+\f0\b0 :\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 15.tiff \width8740 \height560 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Our training optimization algorithm is now a function of two terms: the loss term, which measures how well the model fits the data, and the regularization term, which measures model complexity.\
+\
+Two common (and somewhat related) ways to think of model complexity:\
+\
+Model complexity as a function of the weights of all the features in the model.\
+Model complexity as a function of the total number of features with nonzero weights. \
+\
+If model complexity is a function of weights, a feature weight with a high absolute value is more complex than a feature weight with a low absolute value.\
+\
+We can quantify complexity using the L2 regularization formula, which defines the regularization term as the sum of the squares of all the feature weights:\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 16.tiff \width8920 \height700 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+In this formula, weights close to zero have little effect on model complexity, while outlier weights can have a huge impact.\
+\
+For example, a linear model with the following weights:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 17.tiff \width10180 \height480 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf0 Has an L2 regularization term of 26.915:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 18.tiff \width7560 \height3100 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+But w3 (bolded above), with a squared value of 25, contributes nearly all the complexity. The sum of the squares of all five other weights adds just 1.915 to the L2 regularization term.\
+\
+\
+----------------------------------------\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Regularization for Simplicity: Lambda
+\f0\b0 \
+\
+Model developers tune the overall impact of the regularization term by multiplying its value by a scalar known as lambda (also called the regularization rate). That is, model developers aim to do the following:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 20.tiff \width9260 \height600 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Performing L2 regularization has the following effect on a model\
+	- Encourages weight values toward 0 (but not exactly 0)\
+	- Encourages the mean of the weights toward 0, with a normal (bell-shaped or Gaussian) distribution.\
+\
+Increasing the lambda value strengthens the regularization effect. \
+For example, the histogram of weights for a high value of lambda might look as shown on the left.\
+Lowering the value of lambda tends to yield a flatter histogram, as shown on the right\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 19.tiff \width11740 \height4540 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+When choosing a lambda value, the goal is to strike the right balance between simplicity and training-data fit:\
+\
+If your lambda value is too high, your model will be simple, but you run the risk of underfitting your data. Your model won't learn enough about the training data to make useful predictions.\
+\
+If your lambda value is too low, your model will be more complex, and you run the risk of overfitting your data. Your model will learn too much about the particularities of the training data, and won't be able to generalize to new data.\
+\
+Note: Setting lambda to zero removes regularization completely. In this case, training focuses exclusively on minimizing loss, which poses the highest possible overfitting risk.\
+\
+The ideal value of lambda produces a model that generalizes well to new, previously unseen data. Unfortunately, that ideal value of lambda is data-dependent, so you'll need to do some tuning.\
+\
+----\
+\
+There's a close connection between learning rate and lambda. Strong L2 regularization values tend to drive feature weights closer to 0. Lower learning rates (with early stopping) often produce the same effect because the steps away from 0 aren't as large. Consequently, tweaking learning rate and lambda simultaneously may have confounding effects.\
+\
+Early stopping means ending training before the model fully reaches convergence. In practice, we often end up with some amount of implicit early stopping when training in an online (continuous) fashion. That is, some new trends just haven't had enough data yet to converge.\
+\
+As noted, the effects from changes to regularization parameters can be confounded with the effects from changes in learning rate or number of iterations. One useful practice (when training across a fixed batch of data) is to give yourself a high enough number of iterations that early stopping doesn't play into things.\
+\
+\
+----------------------------------------\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Logistic Regression: Calculating a Probability
+\f0\b0 \
+\
+Many problems require a probability estimate as output. Logistic regression is an extremely efficient mechanism for calculating probabilities. Practically speaking, you can use the returned probability in either of the following two ways:\
+	- "As is"\
+	- Converted to a binary category.\
+\
+Let's consider how we might use the probability "as is." Suppose we create a logistic regression model to predict the probability that a dog will bark during the middle of the night. We'll call that probability:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 21.tiff \width2560 \height500 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+If the logistic regression model predicts a p(bark | night) of 0.05, then over a year, the dog's owners should be startled awake approximately 18 times:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 22.tiff \width5760 \height1480 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+In many cases, you'll map the logistic regression output into the solution to a binary classification problem, in which the goal is to correctly predict one of two possible labels (e.g., "spam" or "not spam"). A later module focuses on that.\
+\
+You might be wondering how a logistic regression model can ensure output that always falls between 0 and 1. As it happens, a sigmoid function, defined as follows, produces output having those same characteristics:\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 23.tiff \width2400 \height980 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+The sigmoid function yields the following plot:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 24.tiff \width5820 \height4000 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+If z represents the output of the linear layer of a model trained with logistic regression, then sigmoid(z) will yield a value (a probability) between 0 and 1. In mathematical terms:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 25.tiff \width2720 \height1080 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 26.tiff \width8100 \height1980 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Note that z is also referred to as the log-odds because the inverse of the sigmoid states that z can be defined as the log of the probability of the "1" label (e.g., "dog barks") divided by the probability of the "0" label (e.g., "dog doesn't bark"):\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 27.tiff \width2980 \height1020 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Here is the sigmoid function with ML labels:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 28.tiff \width6780 \height3760 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 29.tiff \width6780 \height600 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\
+Suppose we had a logistic regression model with three features that learned the following bias and weights:\
+	b = 1\
+	w1 = 2\
+	w2 = -1\
+	w3 = 5\
+Further suppose the following feature values for a given example:\
+	x1 = 0\
+	x2 = 10\
+	x3 = 2\
+\
+Therefore, the log-odds:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 30.tiff \width4580 \height640 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+will be:  (1) + (2)(0) + (-1)(10 + (5)(2) = 1 \
+\
+Consequently, the logistic regression prediction for this particular example will be 0.731 (a 73.1% probability)\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 31.tiff \width4180 \height1060 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 32.tiff \width5380 \height3400 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\
+----------------------------------------\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Loss function for Logistic Regression
+\f0\b0 \
+The loss function for linear regression is squared loss. The loss function for logistic regression is Log Loss, which is defined as follows:\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 33.tiff \width11140 \height3500 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Regularization in Logistic Regression
+\f0\b0 \
+Regularization is extremely important in logistic regression modeling. Without regularization, the asymptotic nature of logistic regression would keep driving loss towards 0 in high dimensions. Consequently, most logistic regression models use one of the following two strategies to dampen model complexity:\
+\
+	L2 regularization.\
+	Early stopping, that is, limiting the number of training steps or the learning rate.\
+	L1 regularization\
+\
+Imagine that you assign a unique id to each example, and map each id to its own feature. If you don't specify a regularization function, the model will become completely overfit. That's because the model would try to drive loss to zero on all examples and never get there, driving the weights for each indicator feature to +infinity or -infinity. This can happen in high dimensional data with feature crosses, when there\'92s a huge mass of rare crosses that happen only on one example each.\
+\
+Fortunately, using L2 or early stopping will prevent this problem.\
+\
+Summary\
+Logistic regression models generate probabilities.\
+Log Loss is the loss function for logistic regression.\
+Logistic regression is widely used by many practitioners.\
+\
+\
+----------------------------------------\
+\
+\
+
+\f1\b Classification: Thresholding
+\f0\b0 \
+\
+Logistic regression returns a probability. You can use the returned probability "as is" (for example, the probability that the user will click on this ad is 0.00023) or convert the returned probability to a binary value (for example, this email is spam).\
+\
+A logistic regression model that returns 0.9995 for a particular email message is predicting that it is very likely to be spam. Conversely, another email message with a prediction score of 0.0003 on that same logistic regression model is very likely not spam. However, what about an email message with a prediction score of 0.6? In order to map a logistic regression value to a binary category, you must define a classification threshold (also called the decision threshold). A value above that threshold indicates "spam"; a value below indicates "not spam." It is tempting to assume that the classification threshold should always be 0.5, but thresholds are problem-dependent, and are therefore values that you must tune.\
+\
+The following sections take a closer look at metrics you can use to evaluate a classification model's predictions, as well as the impact of changing the classification threshold on these predictions.\
+\
+Note: "Tuning" a threshold for logistic regression is different from tuning hyperparameters such as learning rate. Part of choosing a threshold is assessing how much you'll suffer for making a mistake. For example, mistakenly labeling a non-spam message as spam is very bad. However, mistakenly labeling a spam message as non-spam is unpleasant, but hardly the end of your job.\
+\
+
+\f1\b Classification: True vs. False and Positive vs. Negative
+\f0\b0 \
+The Boy Who Cried Wolf \
+\
+Definitions:\
+	"Wolf" is a positive class.\
+	"No wolf" is a negative class.\
+\
+We can summarize our "wolf-prediction" model using a 2x2 confusion matrix that depicts all four possible outcomes:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 34.tiff \width14760 \height5700 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+A true positive is an outcome where the model correctly predicts the positive class. Similarly, a true negative is an outcome where the model correctly predicts the negative class.\
+\
+A false positive is an outcome where the model incorrectly predicts the positive class. And a false negative is an outcome where the model incorrectly predicts the negative class.\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Classification: Accuracy
+\f0\b0 \
+Accuracy is one metric for evaluating classification models. Informally, accuracy is the fraction of predictions our model got right. Formally, accuracy has the following definition:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 36.tiff \width5620 \height840 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf0 For binary classification, accuracy can also be calculated in terms of positives and negatives as follows:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 35.tiff \width4700 \height780 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Where TP = True Positives, TN = True Negatives, FP = False Positives, and FN = False Negatives.\
+\
+Let's try calculating accuracy for the following model that classified 100 tumors as malignant (the positive class) or benign (the negative class):\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 37.tiff \width9260 \height5380 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 {{\NeXTGraphic Pasted Graphic 38.tiff \width7900 \height800 \appleattachmentpadding0 \appleembedtype0 \appleaqc
+}¬}\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+Accuracy comes out to 0.91, or 91% (91 correct predictions out of 100 total examples). That means our tumor classifier is doing a great job of identifying malignancies, right?\
+\
+Actually, let's do a closer analysis of positives and negatives to gain more insight into our model's performance.\
+\
+Of the 100 tumor examples, 91 are benign (90 TNs and 1 FP) and 9 are malignant (1 TP and 8 FNs).\
+\
+Of the 91 benign tumors, the model correctly identifies 90 as benign. That's good. However, of the 9 malignant tumors, the model only correctly identifies 1 as malignant\'97a terrible outcome, as 8 out of 9 malignancies go undiagnosed!\
+\
+While 91% accuracy may seem good at first glance, another tumor-classifier model that always predicts benign would achieve the exact same accuracy (91/100 correct predictions) on our examples. In other words, our model is no better than one that has zero predictive ability to distinguish malignant tumors from benign tumors.\
+\
+Accuracy alone doesn't tell the full story when you're working with a 
+\f1\b class-imbalanced data set
+\f0\b0 , like this one, where there is a significant disparity between the number of positive and negative labels.\
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f1\b \cf0 Classification: Precision and Recall
+\f0\b0 \
+(this section had too many graphics to copy and paste here.  For this one see Google ML snippets - Classification_ Precision and Recall.pdf )\
+\
+
+\f1\b Classification: ROC Curve and AUC
+\f0\b0 \
+Same as previous section - see the file Google ML Snippets - Classification_ ROC Curve and AUC.pdf\
+\
+\
+\
+\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.kaggle.com/jihyeseo/mp3-files"}}{\fldrslt 
+\f3 \cf2 \expnd0\expndtw0\kerning0
+\ul \ulc2 https://www.kaggle.com/jihyeseo/mp3-files}}\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.analyticsvidhya.com/blog/2018/01/10-audio-processing-projects-applications/"}}{\fldrslt 
+\f3 \cf2 \expnd0\expndtw0\kerning0
+\ul \ulc2 https://www.analyticsvidhya.com/blog/2018/01/10-audio-processing-projects-applications/}}\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://docs.google.com/document/d/18sANf5u8p9FGS1FGdQ7G3AVA4aXC29S1eYMENv3V69Y/edit"}}{\fldrslt 
+\f3 \cf2 \expnd0\expndtw0\kerning0
+\ul \ulc2 https://docs.google.com/document/d/18sANf5u8p9FGS1FGdQ7G3AVA4aXC29S1eYMENv3V69Y/edit}}\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://developers.google.com/machine-learning/crash-course/feature-crosses/crossing-one-hot-vectors"}}{\fldrslt 
+\f3 \cf2 \expnd0\expndtw0\kerning0
+\ul \ulc2 https://developers.google.com/machine-learning/crash-course/feature-crosses/crossing-one-hot-vectors}}\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.dell.com/en-us/shop/2-in-1-laptops/xps-13-2-in-1-laptop/spd/xps-13-7390-2-in-1-laptop/x27390dqsuh?configurationid=855c70a4-6c60-4134-9eb4-b5811729f933#features_section"}}{\fldrslt 
+\f3 \cf2 \expnd0\expndtw0\kerning0
+\ul \ulc2 https://www.dell.com/en-us/shop/2-in-1-laptops/xps-13-2-in-1-laptop/spd/xps-13-7390-2-in-1-laptop/x27390dqsuh?configurationid=855c70a4-6c60-4134-9eb4-b5811729f933#features_section}}\
+\
+\
+\
+All,\
+\
+Happy to share more about 5G with you. For a starting point, here are some material shared by IEEE and others:\
+\
+First, Stanford Lecture on 5G: https://www.youtube.com/watch?v=_uPtdGouCMc\
+\
+Here are the IEEE videos:\
+\
+1. https://www.youtube.com/watch?v=GEx_d0SjvS0\
+2. https://www.youtube.com/watch?v=oTLpWu5Kf5E\
+3. https://www.youtube.com/watch?v=_sAxQSGUjwI\
+4. https://www.youtube.com/watch?v=QVNmaISVPCg\
+5. https://www.youtube.com/watch?v=OidnBOcXvic\
+6. https://www.youtube.com/watch?v=OidnBOcXvic&t=14s\
+\
+Finally, please find a full version of the high level spec for 5G attached as well.\
+\
+best\
+sriram\
+\
+\
+\
+\
+\
+\
+\
+}
